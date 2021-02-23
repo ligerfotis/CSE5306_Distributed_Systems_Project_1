@@ -3,7 +3,7 @@ import threading
 import os
 import time
 
-from config import BUFFER_SIZE, port
+from config import BUFFER_SIZE, port, sleep_time
 from utils import send_file, receive_file
 
 """
@@ -34,7 +34,12 @@ class Server:
 
         while 1:
             # accept connections
-            c, addr = self.s.accept()
+            try:
+                c, addr = self.s.accept()
+            # catches OSError when closing the socket
+            except OSError:
+                break
+
             # if connection is up
             if c:
                 # check username
@@ -77,9 +82,8 @@ class Server:
         :param c: connection
         :param username: username string
         """
-        # todo: make a file system for server and each client
-
-        client_file = 'client_file.txt'
+        path = "server_files/"
+        client_file = path + 'client_file_{}.txt'.format(username)
 
         # check if file exists already and erase it if so
         if os.path.exists(client_file):
@@ -89,10 +93,10 @@ class Server:
         receive_file(c, client_file)
 
         # check client's file for spelling mistakes against the lexicon
-        checked_file_name = spelling_check('client_file.txt')
+        checked_file_name = spelling_check(client_file, username)
 
         # time delay to check username inconsistencies
-        # time.sleep(10)
+        time.sleep(sleep_time)
 
         # send back translated text
         send_file(c, checked_file_name)
@@ -103,7 +107,7 @@ class Server:
         print("closed connection with {}".format(username))
 
 
-def spelling_check(file_to_checked):
+def spelling_check(file_to_checked, username):
     """
     Checks a file for spelling errors against lexicon.txt.
     ASSUMPTION: There is only one period at the end of each line.
@@ -111,7 +115,7 @@ def spelling_check(file_to_checked):
     :return: a file with [] around the misspelled word
     """
     # open the lexicon file
-    with open('lexicon.txt') as lex_file:
+    with open('server_files/lexicon.txt') as lex_file:
         lex_array = lex_file.readline().split(" ")
 
     # open the file to be checked
@@ -139,10 +143,10 @@ def spelling_check(file_to_checked):
     # convert word arrays into strings and add period at the end
     string_checked_text = []
     for line in array_checked_text:
-        string_checked_text.append(" ".join(line) + '.')
+        string_checked_text.append(" ".join(line) + '.\n')
 
     # write the annotated text to a file
-    checked_file_name = "checked_text.txt"
+    checked_file_name = "server_files/checked_text_{}.txt".format(username)
     with open(checked_file_name, 'w') as chked_file:
         chked_file.writelines(string_checked_text)
 

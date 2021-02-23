@@ -1,3 +1,4 @@
+import os
 import socket
 
 from config import BUFFER_SIZE, port
@@ -15,6 +16,7 @@ class Client:
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.settimeout(3)
         self.connection_open = False
+        self.username = None
 
     def connect_to_server(self):
         """
@@ -46,6 +48,7 @@ class Client:
         if username_response == "invalid username":
             print("username: {} already taken.".format(username))
             print("Please choose another username")
+            self.username = None
 
             # shutting down the socket
             self.s.shutdown(socket.SHUT_RDWR)
@@ -54,20 +57,24 @@ class Client:
         # valid username
         elif username_response == "username ok":
             print("Connected to the server with username \"{}\"".format(username))
+            self.username = username
             return True
 
     def main(self):
         """
         Main function of the client
         """
+        # path to the client files
+        path = "client_files/"
+
         # file to be checked by the server
-        file_name = 'mytext.txt'
+        file_name = path + 'mytext.txt'
 
         # send file to be checked to server
         send_file(self.s, file_name)
 
         # receive spelling annotated file from server
-        write_name = 'server_annotated_text.txt'
+        write_name = path + 'server_annotated_text_{}.txt'.format(self.username)
         receive_file(self.s, write_name)
 
         # close the connection to the server
