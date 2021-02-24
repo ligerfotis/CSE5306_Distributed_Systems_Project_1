@@ -1,3 +1,7 @@
+"""
+@author: Fotios Lygerakis
+@UTA ID: 1001774373
+"""
 import socket
 import threading
 import PySimpleGUI as sg
@@ -28,7 +32,7 @@ class GUI:
 
     def run(self):
         """
-        handles the gui
+        Function for handling the GUI
         """
 
         while True:
