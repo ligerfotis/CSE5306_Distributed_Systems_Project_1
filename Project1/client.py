@@ -67,6 +67,9 @@ class Client:
         """
         Main function of the client
         """
+        print("before send msg")
+        self.s.send('data'.encode())
+        print("after send msg")
         # path to the client files
         path = "client_files/"
 
@@ -80,7 +83,10 @@ class Client:
         write_name = path + 'server_annotated_text_{}.txt'.format(self.username)
         receive_file(self.s, write_name)
 
+    def close_connection(self):
         # close the connection to the server
+        print("connection closed")
+        self.s.send('exit'.encode())
         self.s.shutdown(socket.SHUT_RDWR)
         self.s.close()
         self.connection_open = False

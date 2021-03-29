@@ -94,20 +94,28 @@ class Server:
         if os.path.exists(client_file):
             os.remove(client_file)
 
-        # start receiving file from the user and saving it
-        receive_file(c, client_file)
+        while 1:
+            print("before msg")
+            msg = c.recv(4).decode()
+            print("after msg {}".format(msg))
+            if msg == "data":
+                # start receiving file from the user and saving it
+                receive_file(c, client_file)
 
-        # check client's file for spelling mistakes against the lexicon
-        checked_file_name = spelling_check(client_file, username)
+                # check client's file for spelling mistakes against the lexicon
+                checked_file_name = spelling_check(client_file, username)
 
-        # time delay to check username inconsistencies
-        time.sleep(sleep_time)
+                # time delay to check username inconsistencies
+                time.sleep(sleep_time)
 
-        # send back translated text
-        send_file(c, checked_file_name)
+                # send back translated text
+                send_file(c, checked_file_name)
+            elif msg == "exit":
+                self.close_connection(username, c)
+                break
 
+    def close_connection(self, username, c):
         self.online_user_list.remove(username)
         c.shutdown(socket.SHUT_RDWR)
         c.close()
         print("closed connection with {}".format(username))
-

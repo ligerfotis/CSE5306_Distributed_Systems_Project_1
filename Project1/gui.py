@@ -34,7 +34,9 @@ class GUI:
         """
         Function for handling the GUI
         """
-
+        if not self.is_server:
+            # connect to the server
+            self.host.reconnect()
         while True:
             # read the events on the gui and their values
             event, values = self.window.read()
@@ -44,23 +46,32 @@ class GUI:
                 delete_output(is_server=self.is_server, layout_used=self.layout)
                 if self.is_server:
                     self.host.s.shutdown(socket.SHUT_RD)
+                else:
+                    self.host.close_connection()
                 break
             # Client's gui
             if not self.is_server:
-                # connect to the server
-                self.host.reconnect()
+                # # connect to the server
+                # self.host.reconnect()
                 # on submit button take the username that has been entered
-                if event == 'Submit':
+                if event == 'Login':
                     # try to log in with the given username
                     print("Trying to log in: {}".format(values[0]))
                     self.logged_in = self.host.login(values[0])
-                # if client has been logged in, start a thread with its functionality
+                    if self.logged_in:
+                        print('You are logged in')
+                    else:
+                        print("Could not login")
+                        self.host.reconnect()
                 if self.logged_in:
-                    print('You are logged in')
-                    thread = threading.Thread(target=self.host.main)
-                    thread.start()
-                else:
-                    print("Could not login")
+                    if event == 'Send File':
+                        print("start client thread")
+                        thread = threading.Thread(target=self.host.main)
+                        thread.start()
+                    if event == 'Add':
+                        print(values[0])
+
+                # if client has been logged in, start a thread with its functionality
             # Server's gui
             else:
                 # start a thread for the server when the Go button is pressed
