@@ -69,7 +69,7 @@ class GUI:
                         thread = threading.Thread(target=self.host.main)
                         thread.start()
                     if event == 'Add':
-                        print(values[0])
+                        print("word {} added to the lexicon".format(values[1]))
 
                 # if client has been logged in, start a thread with its functionality
             # Server's gui

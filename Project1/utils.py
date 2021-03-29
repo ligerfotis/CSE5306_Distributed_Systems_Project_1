@@ -17,7 +17,7 @@ client_layout = [[sg.Text('Please enter username')],
                  [sg.Text("Username", size=(15, 1)), sg.InputText(), sg.Button("Login")],
                  [sg.Button("Send File")],
                  [sg.Output(size=(60, 20))],
-                 [sg.Text("Add lexicon entry", size=(15, 1)), sg.InputText()],
+                 [sg.Text("Add lexicon entry", size=(15, 1)), sg.InputText(do_not_clear=False)],
                  [sg.Button("Add")],
                  [sg.Button('Exit')]]
 

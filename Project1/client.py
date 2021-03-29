@@ -67,9 +67,8 @@ class Client:
         """
         Main function of the client
         """
-        print("before send msg")
         self.s.send('data'.encode())
-        print("after send msg")
+
         # path to the client files
         path = "client_files/"
 

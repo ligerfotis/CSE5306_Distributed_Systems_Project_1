@@ -95,9 +95,7 @@ class Server:
             os.remove(client_file)
 
         while 1:
-            print("before msg")
             msg = c.recv(4).decode()
-            print("after msg {}".format(msg))
             if msg == "data":
                 # start receiving file from the user and saving it
                 receive_file(c, client_file)
